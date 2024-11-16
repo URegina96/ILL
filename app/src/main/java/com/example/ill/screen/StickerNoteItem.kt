@@ -34,10 +34,10 @@ fun StickerNoteItem(
 
     Card(
         modifier = Modifier
-            .size(150.dp)
+            .width(180.dp)
             .padding(8.dp)
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(getPriorityColor(note.priority)),
+        colors = CardDefaults.cardColors(containerColor = getPriorityColor(note.priority)),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
@@ -46,20 +46,27 @@ fun StickerNoteItem(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(note.title, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))
-            Text(note.content, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(bottom = 4.dp))
+            Text(note.title, fontWeight = FontWeight.Bold, color = Color.Black, modifier = Modifier.padding(bottom = 4.dp))
+            Text(note.content, color = Color.Gray, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(bottom = 4.dp))
             Spacer(modifier = Modifier.weight(1f))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Priority: ${note.priority}", style = MaterialTheme.typography.labelSmall)
-                Text("Date: $formattedDate", style = MaterialTheme.typography.labelSmall)
+                Text("Priority: ${note.priority}", style = MaterialTheme.typography.labelSmall, color = Color.DarkGray)
+                Text("Date: $formattedDate", style = MaterialTheme.typography.labelSmall, color = Color.DarkGray)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 IconButton(onClick = { showEditDialog.value = true }) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit Note")
+                    Icon(Icons.Default.Edit, contentDescription = "Edit Note", tint = Color.Black)
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete Note")
+                    Icon(Icons.Default.Delete, contentDescription = "Delete Note", tint = Color.Black)
                 }
             }
         }

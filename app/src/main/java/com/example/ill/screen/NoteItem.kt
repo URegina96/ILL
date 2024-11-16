@@ -36,28 +36,39 @@ fun NoteItem(
             .fillMaxWidth()
             .padding(8.dp)
             .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(note.title, fontWeight = FontWeight.Bold)
-            Text(note.content)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(getPriorityColor(note.priority))
-                )
-                Text(
-                    text = "Priority: ${note.priority}",
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text("Date: $formattedDate")
-                IconButton(onClick = { showEditDialog.value = true }) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit Note")
+            Text(note.title, fontWeight = FontWeight.Bold, color = Color.Black)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(note.content, color = Color.Gray)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .background(getPriorityColor(note.priority))
+                    )
+                    Text(
+                        text = "Priority: ${note.priority}",
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = Color.DarkGray
+                    )
                 }
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete Note")
+                Text("Date: $formattedDate", color = Color.DarkGray)
+                Row {
+                    IconButton(onClick = { showEditDialog.value = true }) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit Note", tint = Color.Black)
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, contentDescription = "Delete Note", tint = Color.Black)
+                    }
                 }
             }
         }

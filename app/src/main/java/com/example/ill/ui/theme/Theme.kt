@@ -7,13 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF6200EE),
-    primaryContainer = Color(0xFF3700B3),
-    secondary = Color(0xFF03DAC5),
-    secondaryContainer = Color(0xFF018786),
-    background = Color(0xFFFFFFFF),
-    surface = Color(0xFFFFFFFF),
-    error = Color(0xFFB00020),
+    primary = PastelBlue,
+    primaryContainer = PastelYellow,
+    secondary = PastelGreen,
+    secondaryContainer = PastelGray,
+    background = Color.White,
+    surface = Color.White,
+    error = Color.Red,
     onPrimary = Color.White,
     onSecondary = Color.Black,
     onBackground = Color.Black,
@@ -29,7 +29,7 @@ fun AppTheme(
     MaterialTheme(
         colorScheme = LightColors,
         typography = Typography,
-        shapes = Shapes, // Используем инициализированные формы
+        shapes = Shapes,
         content = content
     )
 }

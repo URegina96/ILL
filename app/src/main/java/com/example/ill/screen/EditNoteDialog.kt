@@ -44,7 +44,7 @@ fun EditNoteDialog(note: Note, onDismiss: () -> Unit, onSave: (Note) -> Unit) {
         },
         confirmButton = {
             Button(onClick = {
-                if (title.isBlank() || content.isBlank() || priority !in 1..3) {
+                if (title.isBlank() || content.isBlank()) {
                    Toast.makeText(context, "Please fill in all fields correctly", Toast.LENGTH_SHORT).show()
                 } else {
                     onSave(note.copy(title = title, content = content, priority = priority))

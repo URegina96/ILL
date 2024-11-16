@@ -77,6 +77,8 @@ dependencies {
 
     implementation ("androidx.compose.foundation:foundation:1.0.0")
     implementation ("androidx.compose.material:material-icons-extended:1.0.0")
+
+    implementation ("io.coil-kt:coil-compose:2.1.0") // библиотекf для загрузки изображений, которая обрабатывает масштабирование и кэширование изображений
 }
 kapt {
     correctErrorTypes = true
