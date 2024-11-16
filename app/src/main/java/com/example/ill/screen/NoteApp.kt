@@ -22,7 +22,17 @@ import com.example.ill.screen.NoteItem
 import com.example.ill.viewModel.getViewModel
 import com.example.ill.viewModel.NoteViewModel
 import com.example.ill.viewModel.NoteViewModelFactory
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.filled.ViewList
+import androidx.compose.material.icons.filled.ViewModule
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteApp() {
     val context = LocalContext.current
@@ -30,8 +40,19 @@ fun NoteApp() {
         NoteDatabase.getDatabase(context).noteDao())))
     val allNotes by noteViewModel.allNotes.collectAsState(initial = emptyList())
     var showDialog by remember { mutableStateOf(false) }
+    var isListView by remember { mutableStateOf(true) }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Note App") },
+                actions = {
+                    IconButton(onClick = { isListView = !isListView }) {
+                        Icon(if (isListView) Icons.Default.ViewModule else Icons.Default.ViewList, contentDescription = "Switch View")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { showDialog = true }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Note")
@@ -44,10 +65,20 @@ fun NoteApp() {
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                // LazyColumn для отображения всех заметок
-                LazyColumn {
-                    items(allNotes) { note ->
-                        NoteItem(note = note, onClick = { /* действия по клику, если необходимо */ })
+                if (isListView) {
+                    LazyColumn {
+                        items(allNotes) { note ->
+                            NoteItem(note = note, onClick = { /* действия по клику, если необходимо */ })
+                        }
+                    }
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 128.dp),
+                        contentPadding = PaddingValues(8.dp)
+                    ) {
+                        items(allNotes) { note ->
+                            StickerNoteItem(note = note, onClick = { /* действия по клику, если необходимо */ })
+                        }
                     }
                 }
             }
