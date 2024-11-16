@@ -1,6 +1,6 @@
 package com.example.ill.screen
 
-
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,10 +37,7 @@ import com.example.ill.room.NoteRepository
 import com.example.ill.viewModel.getViewModel
 import com.example.ill.viewModel.NoteViewModel
 import com.example.ill.viewModel.NoteViewModelFactory
-import com.example.ill.ui.theme.PastelBlue
 import com.example.ill.ui.theme.PastelGray
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,12 +98,14 @@ fun NoteScreen(
             )
         },
         floatingActionButton = {
-            Column(
+            Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.End
             ) {
                 AddNoteButton(onClick = { onShowDialogChange(true) })
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.width(16.dp))
                 DeleteAllNotesButton(onClick = {
                     noteViewModel.allNotes.value.forEach { noteViewModel.delete(it) }
                 })
