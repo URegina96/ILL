@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.*
@@ -26,6 +27,8 @@ import com.example.ill.AddNoteDialog
 import com.example.ill.FilterBar
 import com.example.ill.FilterOption
 import com.example.ill.R
+import com.example.ill.button.AddNoteButton
+import com.example.ill.button.DeleteAllNotesButton
 import com.example.ill.room.NoteDatabase
 import com.example.ill.room.NoteRepository
 import com.example.ill.viewModel.getViewModel
@@ -33,13 +36,17 @@ import com.example.ill.viewModel.NoteViewModel
 import com.example.ill.viewModel.NoteViewModelFactory
 import com.example.ill.ui.theme.PastelBlue
 import com.example.ill.ui.theme.PastelGray
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteApp() {
     val context = LocalContext.current
-    val noteViewModel: NoteViewModel = getViewModel(factory = NoteViewModelFactory(NoteRepository(
-        NoteDatabase.getDatabase(context).noteDao())))
+    val noteViewModel: NoteViewModel = getViewModel(
+        factory = NoteViewModelFactory(
+            NoteRepository(
+                NoteDatabase.getDatabase(context).noteDao()
+            )
+        )
+    )
     val allNotes by noteViewModel.allNotes.collectAsState(initial = emptyList())
     var showDialog by remember { mutableStateOf(false) }
     var isListView by remember { mutableStateOf(true) }
@@ -82,8 +89,15 @@ fun NoteApp() {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showDialog = true }) {
-                Icon(Icons.Default.Add, contentDescription = "Add Note")
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                AddNoteButton(onClick = { showDialog = true })
+                Spacer(modifier = Modifier.height(16.dp))
+                DeleteAllNotesButton(onClick = {
+                    noteViewModel.allNotes.value.forEach { noteViewModel.delete(it) }
+                })
             }
         },
         content = { padding ->
