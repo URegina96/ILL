@@ -15,10 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.ill.AddNoteDialog
-import com.example.ill.room.Note
 import com.example.ill.room.NoteDatabase
 import com.example.ill.room.NoteRepository
-import com.example.ill.screen.NoteItem
 import com.example.ill.viewModel.getViewModel
 import com.example.ill.viewModel.NoteViewModel
 import com.example.ill.viewModel.NoteViewModelFactory
@@ -30,7 +28,8 @@ import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
-
+import com.example.ill.FilterBar
+import com.example.ill.ilterBar.FilterOption
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +40,17 @@ fun NoteApp() {
     val allNotes by noteViewModel.allNotes.collectAsState(initial = emptyList())
     var showDialog by remember { mutableStateOf(false) }
     var isListView by remember { mutableStateOf(true) }
+    var filterOption by remember { mutableStateOf<FilterOption?>(null) }
+    var filteredNotes by remember { mutableStateOf(allNotes) }
+
+    LaunchedEffect(allNotes, filterOption) {
+        filteredNotes = when (filterOption) {
+            FilterOption.BY_TITLE -> allNotes.sortedBy { it.title }
+            FilterOption.BY_DATE -> allNotes.sortedBy { it.date }
+            FilterOption.BY_PRIORITY -> allNotes.sortedBy { it.priority }
+            else -> allNotes
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -65,9 +75,12 @@ fun NoteApp() {
                     .padding(padding)
                     .padding(16.dp)
             ) {
+                FilterBar(filterOption) { newFilter ->
+                    filterOption = newFilter
+                }
                 if (isListView) {
                     LazyColumn {
-                        items(allNotes) { note ->
+                        items(filteredNotes) { note ->
                             NoteItem(note = note, onClick = { /* действия по клику, если необходимо */ })
                         }
                     }
@@ -76,7 +89,7 @@ fun NoteApp() {
                         columns = GridCells.Adaptive(minSize = 128.dp),
                         contentPadding = PaddingValues(8.dp)
                     ) {
-                        items(allNotes) { note ->
+                        items(filteredNotes) { note ->
                             StickerNoteItem(note = note, onClick = { /* действия по клику, если необходимо */ })
                         }
                     }
@@ -92,4 +105,3 @@ fun NoteApp() {
         })
     }
 }
-
