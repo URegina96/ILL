@@ -23,19 +23,19 @@ NoteApp - это мощное и удобное приложение для уп
 ## Скриншоты
 
 1. Вход в приложение
-   ![Login Screen](drawable/login.png)
+   ![Login Screen](app/src/main/res/drawable/login.png)
 
 2. Добавление заметки
-   ![Add Note](drawable/add.png)
+   ![Add Note](app/src/main/res/drawable/add.png)
 
 3. Отображение деталей     
-   ![Delete All Notes](drawable/display.png)
+   ![Delete All Notes](app/src/main/res/drawable/display.png)
 
 4. Заметки в виде списка
-   ![Notes List View](drawable/noteslist.png)
+   ![Notes List View](app/src/main/res/drawable/noteslist.png)
 
 5. Заметки в виде стикеров
-   ![Notes Sticker View](drawable/notessticker.png)
+   ![Notes Sticker View](app/src/main/res/drawable/notessticker.png)
 
 
 
