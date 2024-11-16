@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.ill.ilterBar.FilterOption
 
 @Composable
 fun FilterBar(filterOption: FilterOption?, onFilterChange: (FilterOption?) -> Unit) {
@@ -64,11 +63,24 @@ fun FilterBar(filterOption: FilterOption?, onFilterChange: (FilterOption?) -> Un
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.DateRange, contentDescription = "By Date", tint = Color(0xFF81C784)) // Пастельный цвет иконки
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Date", color = Color(0xFF81C784)) // Пастельный цвет текста
+                                Text("Date: New to Old", color = Color(0xFF81C784)) // Пастельный цвет текста
                             }
                         },
                         onClick = {
-                            onFilterChange(FilterOption.BY_DATE)
+                            onFilterChange(FilterOption.BY_DATE_DESC)
+                            expanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.DateRange, contentDescription = "By Date", tint = Color(0xFF81C784)) // Пастельный цвет иконки
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Date: Old to New", color = Color(0xFF81C784)) // Пастельный цвет текста
+                            }
+                        },
+                        onClick = {
+                            onFilterChange(FilterOption.BY_DATE_ASC)
                             expanded = false
                         }
                     )

@@ -20,13 +20,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.ill.AddNoteDialog
 import com.example.ill.FilterBar
-import com.example.ill.ilterBar.FilterOption
+import com.example.ill.FilterOption
 import com.example.ill.room.NoteDatabase
 import com.example.ill.room.NoteRepository
 import com.example.ill.viewModel.getViewModel
 import com.example.ill.viewModel.NoteViewModel
 import com.example.ill.viewModel.NoteViewModelFactory
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteApp() {
@@ -42,7 +41,8 @@ fun NoteApp() {
     LaunchedEffect(allNotes, filterOption) {
         filteredNotes = when (filterOption) {
             FilterOption.BY_TITLE -> allNotes.sortedBy { it.title }
-            FilterOption.BY_DATE -> allNotes.sortedBy { it.date }
+            FilterOption.BY_DATE_DESC -> allNotes.sortedByDescending { it.date }
+            FilterOption.BY_DATE_ASC -> allNotes.sortedBy { it.date }
             FilterOption.BY_PRIORITY -> allNotes.sortedBy { it.priority }
             else -> allNotes
         }
