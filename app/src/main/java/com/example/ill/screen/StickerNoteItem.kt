@@ -3,6 +3,7 @@ package com.example.ill.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -31,12 +32,13 @@ fun StickerNoteItem(
     val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     val formattedDate = dateFormat.format(Date(note.date))
     val showEditDialog = remember { mutableStateOf(false) }
+    val showFullContentDialog = remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .width(180.dp)
             .padding(8.dp)
-            .clickable(onClick = onClick),
+            .clickable { showFullContentDialog.value = true },
         colors = CardDefaults.cardColors(containerColor = getPriorityColor(note.priority)),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -46,20 +48,35 @@ fun StickerNoteItem(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(note.title, fontWeight = FontWeight.Bold, color = Color.Black, modifier = Modifier.padding(bottom = 4.dp))
-            Text(note.content, color = Color.Gray, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(bottom = 4.dp))
+            Text(
+                note.title,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                note.content,
+                color = Color.Gray,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
             Spacer(modifier = Modifier.weight(1f))
+            Divider(color = Color.Gray, thickness = 0.5.dp)
+            Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Priority: ${note.priority}", style = MaterialTheme.typography.labelSmall, color = Color.DarkGray)
                 Text("Date: $formattedDate", style = MaterialTheme.typography.labelSmall, color = Color.DarkGray)
             }
+            Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { showEditDialog.value = true }) {
@@ -79,6 +96,19 @@ fun StickerNoteItem(
             onSave = { updatedNote ->
                 onEdit(updatedNote)
                 showEditDialog.value = false
+            }
+        )
+    }
+
+    if (showFullContentDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showFullContentDialog.value = false },
+            title = { Text(note.title) },
+            text = { Text(note.content) },
+            confirmButton = {
+                Button(onClick = { showFullContentDialog.value = false }) {
+                    Text("Close")
+                }
             }
         )
     }

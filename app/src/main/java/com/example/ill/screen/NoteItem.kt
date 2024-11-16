@@ -3,6 +3,7 @@ package com.example.ill.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.ill.room.Note
 import com.example.ill.ui.theme.getPriorityColor
@@ -30,26 +32,44 @@ fun NoteItem(
     val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
     val formattedDate = dateFormat.format(Date(note.date))
     val showEditDialog = remember { mutableStateOf(false) }
+    val showFullContentDialog = remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable(onClick = onClick),
+            .clickable { showFullContentDialog.value = true },
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(note.title, fontWeight = FontWeight.Bold, color = Color.Black)
+            Text(
+                note.title,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(note.content, color = Color.Gray)
+            Text(
+                note.content,
+                color = Color.Gray,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
             Spacer(modifier = Modifier.height(8.dp))
+            Divider(color = Color.Gray, thickness = 0.5.dp)
+            Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Date: $formattedDate", color = Color.DarkGray)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Divider(color = Color.Gray, modifier = Modifier.width(1.dp).fillMaxHeight().padding(horizontal = 4.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
                             .size(12.dp)
@@ -61,7 +81,6 @@ fun NoteItem(
                         color = Color.DarkGray
                     )
                 }
-                Text("Date: $formattedDate", color = Color.DarkGray)
                 Row {
                     IconButton(onClick = { showEditDialog.value = true }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit Note", tint = Color.Black)
@@ -81,6 +100,19 @@ fun NoteItem(
             onSave = { updatedNote ->
                 onEdit(updatedNote)
                 showEditDialog.value = false
+            }
+        )
+    }
+
+    if (showFullContentDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showFullContentDialog.value = false },
+            title = { Text(note.title) },
+            text = { Text(note.content) },
+            confirmButton = {
+                Button(onClick = { showFullContentDialog.value = false }) {
+                    Text("Close")
+                }
             }
         )
     }
