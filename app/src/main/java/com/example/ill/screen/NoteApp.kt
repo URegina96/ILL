@@ -1,5 +1,6 @@
 package com.example.ill.screen
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,128 +37,32 @@ import com.example.ill.viewModel.NoteViewModel
 import com.example.ill.viewModel.NoteViewModelFactory
 import com.example.ill.ui.theme.PastelBlue
 import com.example.ill.ui.theme.PastelGray
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun NoteApp() {
     val context = LocalContext.current
-    val noteViewModel: NoteViewModel = getViewModel(
-        factory = NoteViewModelFactory(
-            NoteRepository(
-                NoteDatabase.getDatabase(context).noteDao()
-            )
-        )
-    )
-    val allNotes by noteViewModel.allNotes.collectAsState(initial = emptyList())
+    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    val savedUsername = sharedPreferences.getString("username", "")
+    val savedPassword = sharedPreferences.getString("password", "")
+    var isLoggedIn by remember { mutableStateOf(savedUsername != "" && savedPassword != "") }
     var showDialog by remember { mutableStateOf(false) }
-    var isListView by remember { mutableStateOf(true) }
-    var filterOption by remember { mutableStateOf<FilterOption?>(null) }
 
-    val filteredNotes = produceState(initialValue = allNotes, allNotes, filterOption) {
-        value = when (filterOption) {
-            FilterOption.BY_TITLE -> allNotes.sortedBy { it.title }
-            FilterOption.BY_DATE_DESC -> allNotes.sortedByDescending { it.date }
-            FilterOption.BY_DATE_ASC -> allNotes.sortedBy { it.date }
-            FilterOption.BY_PRIORITY -> allNotes.sortedBy { it.priority }
-            else -> allNotes
-        }
-    }.value
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Note App",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    )
-                },
-                actions = {
-                    IconButton(onClick = { isListView = !isListView }) {
-                        Icon(
-                            imageVector = if (isListView) Icons.Default.ViewModule else Icons.Default.ViewList,
-                            contentDescription = "Switch View",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PastelGray
-                )
-            )
-        },
-        floatingActionButton = {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
-                AddNoteButton(onClick = { showDialog = true })
-                Spacer(modifier = Modifier.height(16.dp))
-                DeleteAllNotesButton(onClick = {
-                    noteViewModel.allNotes.value.forEach { noteViewModel.delete(it) }
-                })
-            }
-        },
-        content = { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                Image(
-                    painter = rememberImagePainter(data = R.drawable.background_image1),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    alignment = Alignment.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(0.3f) // Прозрачность изображения фона
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    FilterBar(filterOption) { newFilter ->
-                        filterOption = newFilter
-                    }
-                    if (isListView) {
-                        LazyColumn {
-                            items(filteredNotes) { note ->
-                                NoteItem(
-                                    note = note,
-                                    onClick = { /* действия по клику, если необходимо */ },
-                                    onDelete = { noteViewModel.delete(note) },
-                                    onEdit = { updatedNote -> noteViewModel.update(updatedNote) }
-                                )
-                            }
-                        }
-                    } else {
-                        LazyVerticalGrid(
-                            columns = GridCells.Adaptive(minSize = 128.dp),
-                            contentPadding = PaddingValues(8.dp)
-                        ) {
-                            items(filteredNotes) { note ->
-                                StickerNoteItem(
-                                    note = note,
-                                    onClick = { /* действия по клику, если необходимо */ },
-                                    onDelete = { noteViewModel.delete(note) },
-                                    onEdit = { updatedNote -> noteViewModel.update(updatedNote) }
-                                )
-                            }
-                        }
-                    }
+    if (isLoggedIn) {
+        NoteScreen(showDialog, onLogout = {
+            sharedPreferences.edit().clear().apply()
+            isLoggedIn = false
+        }, onShowDialogChange = { showDialog = it })
+    } else {
+        LoginScreen(onLogin = { username, password, rememberMe ->
+            sharedPreferences.edit().apply {
+                if (rememberMe) {
+                    putString("username", username)
+                    putString("password", password)
                 }
+                apply()
             }
-        }
-    )
-
-    if (showDialog) {
-        AddNoteDialog(onDismiss = { showDialog = false }, onAddNote = { note ->
-            noteViewModel.insert(note)
-            showDialog = false // Закрыть диалог после добавления заметки
+            isLoggedIn = true
         })
     }
 }
+
