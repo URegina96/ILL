@@ -1,9 +1,6 @@
 package com.example.ill.screen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -26,6 +23,7 @@ import com.example.ill.room.NoteRepository
 import com.example.ill.viewModel.getViewModel
 import com.example.ill.viewModel.NoteViewModel
 import com.example.ill.viewModel.NoteViewModelFactory
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteApp() {
@@ -36,17 +34,16 @@ fun NoteApp() {
     var showDialog by remember { mutableStateOf(false) }
     var isListView by remember { mutableStateOf(true) }
     var filterOption by remember { mutableStateOf<FilterOption?>(null) }
-    var filteredNotes by remember { mutableStateOf(allNotes) }
 
-    LaunchedEffect(allNotes, filterOption) {
-        filteredNotes = when (filterOption) {
+    val filteredNotes = produceState(initialValue = allNotes, allNotes, filterOption) {
+        value = when (filterOption) {
             FilterOption.BY_TITLE -> allNotes.sortedBy { it.title }
             FilterOption.BY_DATE_DESC -> allNotes.sortedByDescending { it.date }
             FilterOption.BY_DATE_ASC -> allNotes.sortedBy { it.date }
             FilterOption.BY_PRIORITY -> allNotes.sortedBy { it.priority }
             else -> allNotes
         }
-    }
+    }.value
 
     Scaffold(
         topBar = {
@@ -77,7 +74,12 @@ fun NoteApp() {
                 if (isListView) {
                     LazyColumn {
                         items(filteredNotes) { note ->
-                            NoteItem(note = note, onClick = { /* действия по клику, если необходимо */ })
+                            NoteItem(
+                                note = note,
+                                onClick = { /* действия по клику, если необходимо */ },
+                                onDelete = { noteViewModel.delete(note) },
+                                onEdit = { updatedNote -> noteViewModel.update(updatedNote) }
+                            )
                         }
                     }
                 } else {
@@ -86,7 +88,12 @@ fun NoteApp() {
                         contentPadding = PaddingValues(8.dp)
                     ) {
                         items(filteredNotes) { note ->
-                            StickerNoteItem(note = note, onClick = { /* действия по клику, если необходимо */ })
+                            StickerNoteItem(
+                                note = note,
+                                onClick = { /* действия по клику, если необходимо */ },
+                                onDelete = { noteViewModel.delete(note) },
+                                onEdit = { updatedNote -> noteViewModel.update(updatedNote) }
+                            )
                         }
                     }
                 }

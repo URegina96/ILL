@@ -1,29 +1,34 @@
 package com.example.ill.viewModel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.ill.room.Note
 import com.example.ill.room.NoteRepository
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
-    val allNotes: Flow<List<Note>> = repository.allNotes
+    private val _allNotes = MutableStateFlow<List<Note>>(emptyList())
+    val allNotes: StateFlow<List<Note>> = _allNotes
+
+    init {
+        viewModelScope.launch {
+            repository.allNotes.collect {
+                _allNotes.value = it
+            }
+        }
+    }
 
     fun insert(note: Note) = viewModelScope.launch {
         repository.insert(note)
     }
 
+    fun delete(note: Note) = viewModelScope.launch {
+        repository.delete(note)
+    }
+
     fun update(note: Note) = viewModelScope.launch {
         repository.update(note)
-    }
-
-    fun delete(id: Int) = viewModelScope.launch {
-        repository.delete(id)
-    }
-
-    fun searchNotes(searchQuery: String): Flow<List<Note>> {
-        return repository.searchNotes(searchQuery)
     }
 }
